@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusat Kuiz & Dashboard Sains Tahun 4 KSSR - Cikgu Yan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+        }
+
+        .font-heading {
+            font-family: 'Fredoka', cursive;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: float 3.5s ease-in-out infinite;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.82);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-interactive {
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.3);
+        }
+        .btn-interactive:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+        }
+        .btn-interactive:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.3);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-between p-3 md:p-6 select-none">
+
+    <!-- HEADER -->
+    <header class="w-full max-w-6xl mx-auto mb-6">
+        <div class="glass-card rounded-3xl p-4 md:p-6 text-center relative overflow-hidden shadow-2xl border-b-4 border-indigo-500/40">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-3 text-left">
+                    <span class="text-4xl md:text-5xl animate-float">🚀</span>
+                    <div>
+                        <h1 class="text-xl md:text-3xl font-extrabold font-heading bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300">
+                            PULAU SAINS KSSR TAHUN 4
+                        </h1>
+                        <p class="text-xs md:text-sm text-cyan-200 font-semibold">
+                            <i class="fa-solid fa-book-open text-amber-400 mr-1"></i> Modul Pembelajaran Interaktif (10 Soalan / Unit)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="showSection('units-screen')" class="btn-interactive bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-xl text-xs md:text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-grid-2"></i> Senarai Unit
+                    </button>
+                    <button onclick="showSection('dashboard-screen'); renderTeacherDashboard();" class="btn-interactive bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs md:text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line"></i> Dashboard Rekod
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="w-full max-w-6xl mx-auto flex-grow flex flex-col justify-center my-2">
+
+        <!-- ================= 1. UNIT SELECTION SCREEN ================= -->
+        <div id="units-screen" class="space-y-6">
+            <div class="text-center max-w-2xl mx-auto">
+                <h2 class="text-2xl md:text-4xl font-bold font-heading text-amber-300 mb-2">Pilih Unit Sains Tahun 4</h2>
+                <p class="text-gray-300 text-xs md:text-base">Sila pilih unit tajuk untuk memulakan cabaran kuiz 10 soalan interaktif.</p>
+            </div>
+
+            <!-- Grid of 10 KSSR Year 4 Units -->
+            <div id="units-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamically Generated via JS -->
+            </div>
+        </div>
+
+        <!-- ================= 2. GAME KUIZ SCREEN ================= -->
+        <div id="game-screen" class="hidden flex-col gap-4">
+            <!-- Scoreboard / Status bar -->
+            <div class="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg border-cyan-500/20">
+                <div class="flex items-center space-x-2">
+                    <span id="current-unit-icon" class="text-2xl">📘</span>
+                    <div>
+                        <span id="current-unit-title" class="text-xs md:text-sm font-bold text-amber-300 uppercase tracking-wider block">Unit 1</span>
+                        <span id="current-unit-subtitle" class="text-sm md:text-base font-extrabold text-white">Kemahiran Saintifik</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="bg-slate-900/80 px-3 py-1.5 rounded-xl border border-pink-500/30 text-center">
+                        <span class="text-[10px] font-bold text-pink-300 block uppercase">Nyawa</span>
+                        <div id="lives-container" class="flex space-x-1 text-sm md:text-base text-red-500">
+                            <!-- Hearts injected by JS -->
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/80 px-3 py-1.5 rounded-xl border border-cyan-500/30 text-center">
+                        <span class="text-[10px] font-bold text-cyan-300 block uppercase">Soalan</span>
+                        <span id="question-tracker" class="text-sm md:text-base font-bold text-white">1 / 10</span>
+                    </div>
+                    <div class="bg-slate-900/80 px-3 py-1.5 rounded-xl border border-amber-500/30 text-center">
+                        <span class="text-[10px] font-bold text-amber-300 block uppercase">Kristal</span>
+                        <span id="score-text" class="text-sm md:text-base font-bold text-amber-400">0 💎</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-800/80 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 h-full rounded-full transition-all duration-300 w-0"></div>
+            </div>
+
+            <!-- Question Card -->
+            <div id="question-card" class="glass-card rounded-3xl p-5 md:p-8 shadow-2xl relative">
+                <div class="mb-6">
+                    <span id="question-number-badge" class="inline-block bg-purple-900/80 text-purple-200 text-xs font-bold px-3 py-1 rounded-full border border-purple-400/30 mb-3">
+                        Soalan 1 daripada 10
+                    </span>
+                    <h2 id="question-text" class="text-base md:text-xl font-bold text-white leading-relaxed font-heading">
+                        Memuat naik soalan...
+                    </h2>
+                </div>
+
+                <!-- Options -->
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                    <!-- Dynamic Buttons -->
+                </div>
+
+                <!-- Feedback Banner -->
+                <div id="feedback-box" class="hidden mt-5 p-4 rounded-2xl text-center font-bold font-heading text-sm md:text-base border-2 transition-all duration-300">
+                    <span id="feedback-text"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 3. RECORD NAME & SUBMIT SCREEN ================= -->
+        <div id="record-screen" class="hidden glass-card rounded-3xl p-6 md:p-10 text-center max-w-xl mx-auto shadow-2xl">
+            <div id="record-icon" class="text-6xl md:text-8xl mb-3 animate-float">🎉</div>
+            <h2 id="record-title" class="text-2xl md:text-4xl font-extrabold font-heading text-amber-300 mb-2">Misi Selesai!</h2>
+            <p id="record-subtitle" class="text-gray-300 text-sm md:text-base mb-6">Sila masukkan nama penuh dan kelas untuk merekodkan pencapaian anda.</p>
+
+            <!-- Stats Box -->
+            <div class="bg-slate-900/80 rounded-2xl p-4 mb-6 border border-slate-700 grid grid-cols-2 gap-3">
+                <div class="p-3 bg-slate-800/50 rounded-xl border border-amber-500/20">
+                    <span class="text-xs text-gray-400 block font-bold">JUMLAH KRISTAL</span>
+                    <span id="final-score" class="text-2xl md:text-3xl font-extrabold font-heading text-amber-400">0 💎</span>
+                </div>
+                <div class="p-3 bg-slate-800/50 rounded-xl border border-cyan-500/20">
+                    <span class="text-xs text-gray-400 block font-bold">KADAR BETUL</span>
+                    <span id="final-accuracy" class="text-2xl md:text-3xl font-extrabold font-heading text-cyan-400">0/10</span>
+                </div>
+            </div>
+
+            <!-- Student Input Form -->
+            <form onsubmit="saveStudentResult(event)" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Nama Penuh Murid:</label>
+                    <input type="text" id="student-name" required placeholder="Contoh: Nur Aisyah Binti Ahmad" class="w-full bg-slate-900/90 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 uppercase mb-1">Kelas:</label>
+                    <input type="text" id="student-class" required placeholder="Contoh: 4 Pintar" class="w-full bg-slate-900/90 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-400 text-sm">
+                </div>
+
+                <button type="submit" class="btn-interactive w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-900 font-extrabold font-heading text-lg py-3.5 rounded-2xl border-b-4 border-emerald-800">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> SIMPAN REKOD SAYA
+                </button>
+            </form>
+        </div>
+
+        <!-- ================= 4. DASHBOARD GURU SCREEN ================= -->
+        <div id="dashboard-screen" class="hidden space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl md:text-4xl font-bold font-heading text-amber-300">
+                        <i class="fa-solid fa-users-viewfinder mr-2 text-cyan-400"></i>Dashboard Rekod Murid Tahun 4
+                    </h2>
+                    <p class="text-gray-300 text-xs md:text-sm">Senarai murid yang telah menyelesaikan kuiz unit Sains Tahun 4.</p>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="exportToCSV()" class="btn-interactive bg-emerald-700 hover:bg-emerald-600 text-white text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 font-bold">
+                        <i class="fa-solid fa-file-excel"></i> Muat Turun CSV
+                    </button>
+                    <button onclick="clearAllData()" class="btn-interactive bg-rose-700 hover:bg-rose-600 text-white text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 font-bold">
+                        <i class="fa-solid fa-trash"></i> Padam Semua Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Analytical Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="glass-card p-4 rounded-2xl border-l-4 border-cyan-400 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-gray-400 uppercase font-bold block">Jumlah Penyertaan</span>
+                        <span id="summary-total-students" class="text-2xl font-extrabold font-heading text-cyan-300">0</span>
+                    </div>
+                    <i class="fa-solid fa-graduation-cap text-3xl text-cyan-400/40"></i>
+                </div>
+                <div class="glass-card p-4 rounded-2xl border-l-4 border-amber-400 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-gray-400 uppercase font-bold block">Purata Skor Kristal</span>
+                        <span id="summary-avg-score" class="text-2xl font-extrabold font-heading text-amber-300">0 💎</span>
+                    </div>
+                    <i class="fa-solid fa-gem text-3xl text-amber-400/40"></i>
+                </div>
+                <div class="glass-card p-4 rounded-2xl border-l-4 border-purple-400 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-gray-400 uppercase font-bold block">Unit Paling Kerap Dicuba</span>
+                        <span id="summary-top-unit" class="text-sm font-extrabold font-heading text-purple-300">-</span>
+                    </div>
+                    <i class="fa-solid fa-trophy text-3xl text-purple-400/40"></i>
+                </div>
+            </div>
+
+            <!-- Table Filter & Search -->
+            <div class="glass-card p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+                <div class="relative w-full sm:w-64">
+                    <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+                    <input type="text" id="search-student" onkeyup="filterDashboardTable()" placeholder="Cari nama murid atau kelas..." class="w-full bg-slate-900/90 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400">
+                </div>
+
+                <select id="filter-unit" onchange="filterDashboardTable()" class="bg-slate-900/90 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400">
+                    <option value="ALL">Semua Unit (Unit 1 - 10)</option>
+                    <!-- Options dynamically loaded -->
+                </select>
+            </div>
+
+            <!-- Records Table -->
+            <div class="glass-card rounded-2xl overflow-hidden border border-slate-700">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs md:text-sm">
+                        <thead class="bg-slate-900/90 text-cyan-300 font-heading tracking-wider uppercase border-b border-slate-700">
+                            <tr>
+                                <th class="p-3.5">Tarikh & Masa</th>
+                                <th class="p-3.5">Nama Murid</th>
+                                <th class="p-3.5">Kelas</th>
+                                <th class="p-3.5">Unit Tajuk</th>
+                                <th class="p-3.5 text-center">Markah / Tepat</th>
+                                <th class="p-3.5 text-center">Kristal 💎</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboard-table-body" class="divide-y divide-slate-800 text-gray-200">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="empty-dashboard-msg" class="p-8 text-center text-gray-400 text-sm hidden">
+                    <i class="fa-solid fa-folder-open text-3xl mb-2 block text-gray-500"></i>
+                    Belum ada sebarang rekod murid disimpan lagi.
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full max-w-6xl mx-auto mt-6 text-center">
+        <div class="glass-card rounded-2xl py-3 px-4 text-xs text-gray-300 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>🎮 PDPC Idea By <strong class="text-cyan-300">Cikgu Yan</strong></span>
+            <span class="text-gray-400">Sains Sekolah Rendah • KSSR Semakan Tahun 4</span>
+        </div>
+    </footer>
+
+    <script>
+        /* ====================================================================
+           1. DATASET: 10 UNITS SAINS KSSR TAHUN 4 (10 QUESTIONS PER UNIT)
+           ==================================================================== */
+        const unitsData = [
+            {
+                id: 1,
+                title: "Unit 1: Kemahiran Saintifik",
+                subtitle: "KPS, Kemahiran Manipulatif, Pembolehubah & Hipotesis",
+                icon: "🔬",
+                badgeColor: "from-blue-500 to-indigo-600",
+                questions: [
+                    {
+                        question: "Apakah yang dimaksudkan dengan 'Pembolehubah Dimanipulasi' dalam eksperimen?",
+                        options: ["Perkara yang ditetapkan sama", "Perkara yang diubah/dibezakan", "Perkara yang diukur/perhatikan", "Keputusan muktamad"],
+                        correct: 1
+                    },
+                    {
+                        question: "Untuk mengukur isi padu cecair dengan tepat, kedudukan mata mestilah berserenjang dengan...",
+                        options: ["Atas cecair", "Bawah dasar silinder", "Meniskus cecair", "Dinding luar silinder"],
+                        correct: 2
+                    },
+                    {
+                        question: "Apakah yang dimaksudkan dengan Kemahiran Proses Sains 'Membendung / Membuat Hipotesis'?",
+                        options: ["Membuat penyataan umum yang boleh diuji antara pembolehubah", "Merekod data dalam jadual", "Membeli radas di kedai", "Melukis alatan sains"],
+                        correct: 0
+                    },
+                    {
+                        question: "Apakah alat pengukur yang paling sesuai untuk mengukur tebal sehelai kertas?",
+                        options: ["Pembaris kayu", "Pita pengukur", "Angkup luar", "Pembaris sentimeter"],
+                        correct: 2
+                    },
+                    {
+                        question: "Membuat ramalan dalam sains bermaksud...",
+                        options: ["Meneka tanpa sebab", "Jangkaan tentang sesuatu peristiwa berdasarkan pemerhatian dan pengalaman lalu", "Membaca dari buku", "Melukis gambar rajah"],
+                        correct: 1
+                    },
+                    {
+                        question: "Antara berikut, yang manakah merupakan Kemahiran Manipulatif Sains?",
+                        options: ["Membersihkan dan menyimpan alatan sains dengan betul dan selamat", "Menulis karangan", "Bermain dengan rakan semasa eksperimen", "Membawa balik bikar ke rumah"],
+                        correct: 0
+                    },
+                    {
+                        question: "Apakah pembolehubah yang perlu 'dimalarkan' dalam eksperimen menguji tumbesaran pokok?",
+                        options: ["Kuantiti air yang disiram setiap hari", "Ketinggian pokok", "Jumlah daun", "Saiz pasu yang berbeza"],
+                        correct: 0
+                    },
+                    {
+                        question: "Pemerhatian dibuat menggunakan deria berikut, KECUALI...",
+                        options: ["Deria Penglihatan", "Deria Rasa", "Deria Sentuhan", "Deria Perasaan"],
+                        correct: 3
+                    },
+                    {
+                        question: "Selepas selesai eksperimen, spesimen hidup seperti cacing tanah hendaklah...",
+                        options: ["Dibuang ke dalam singki", "Dilepaskan semula ke habitat asalnya dengan selamat", "Dibiarkan di atas meja", "Dibakar"],
+                        correct: 1
+                    },
+                    {
+                        question: "Komunikasi dalam sains boleh dilakukan melalui cara berikut, KECUALI...",
+                        options: ["Jadual dan Carta Palang", "Graf dan Model", "Laporan bertulis", "Berbisik semasa ujian"],
+                        correct: 3
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "Unit 2: Peraturan Bilik Sains",
+                subtitle: "Disiplin & Langkah Keselamatan Makmal",
+                icon: "🏫",
+                badgeColor: "from-amber-500 to-orange-600",
+                questions: [
+                    {
+                        question: "Apakah tindakan pertama yang mesti diambil sekiranya spesimen kaca pecah dalam Bilik Sains?",
+                        options: ["Pindah ke bilik lain", "Melaporkan serta-merta kepada guru", "Membersihkan sendiri tanpa pengetahuan guru", "Menyembunyikan serpihan dalam bag"],
+                        correct: 1
+                    },
+                    {
+                        question: "Mengapakah kita dilarang berlari dan bermain di dalam Bilik Sains?",
+                        options: ["Kerana bilik sains sangat berhabuk", "Mengelakkan daripada berlaku kecederaan dan kerosakan alatan", "Supaya guru tidak marah", "Supaya masa cepat berlalu"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah pakaian yang BETUL semasa berada di dalam Bilik Sains?",
+                        options: ["Kasut bertutup dan pakaian kemas", "Selipar jepun", "Berkaki ayam", "Pakaian sukan yang basah"],
+                        correct: 0
+                    },
+                    {
+                        question: "Bolehkah kita menghidu atau merasa bahan kimia di dalam Bilik Sains tanpa kebenaran guru?",
+                        options: ["Boleh jika baunya wangi", "Tidak boleh sama sekali kerana boleh beracun/berbahaya", "Boleh untuk mencuba", "Boleh jika diarah rakan"],
+                        correct: 1
+                    },
+                    {
+                        question: "Sebelum meninggalkan Bilik Sains, kita hendaklah memastikan...",
+                        options: ["Suis elektrik dan paip air ditutup rapat", "Tingkap ditutup dan lampu dibiarkan terpasang", "Sampah dibuang di bawah meja", "Pintu dibiarkan terbuka"],
+                        correct: 0
+                    },
+                    {
+                        question: "Di manakah bahan sisa cecair kimia sepatutnya dibuang?",
+                        options: ["Ke dalam tong sampah", "Ke dalam singki khas mengikut arahan guru", "Lantai makmal", "Luar tingkap"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah kegunaan Peti Pertolongan Cemas di dalam Bilik Sains?",
+                        options: ["Menyimpan makanan", "Merawat kecederaan ringkas atau kemalangan kecil", "Menyimpan alat tulis", "Menyimpan spesimen"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah yang perlu dilakukan sekiranya rambut panjang semasa menjalankan eksperimen yang melibatkan api?",
+                        options: ["Diikat dengan kemas ke belakang", "Dibiarkan terurai", "Dipotong pendek", "Dibasahi air"],
+                        correct: 0
+                    },
+                    {
+                        question: "Mengapakah makanan dan minuman tidak dibenarkan dibawa masuk ke dalam Bilik Sains?",
+                        options: ["Elak terperangkap dalam bilik", "Elak tercemar dengan bahan kimia berbahaya", "Supaya tidak mengantuk", "Supaya bilik sejuk"],
+                        correct: 1
+                    },
+                    {
+                        question: "Siapakah yang bertanggungjawab menjaga kebersihan dan keselamatan Bilik Sains?",
+                        options: ["Guru sains sahaja", "Tukang cuci sekolah sahaja", "Semua murid dan pengguna bilik sains", "Guru besar sahaja"],
+                        correct: 2
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "Unit 3: Manusia",
+                subtitle: "Pernafasan, Perkumuhan, Penyahinjaan & Gerak Balas",
+                icon: "🫁",
+                badgeColor: "from-pink-500 to-rose-600",
+                questions: [
+                    {
+                        question: "Apakah laluan udara yang betul semasa manusia MENARIK NAFAS?",
+                        options: ["Hidung → Trakea → Paru-paru", "Paru-paru → Trakea → Hidung", "Hidung → Paru-paru → Trakea", "Trakea → Hidung → Paru-paru"],
+                        correct: 0
+                    },
+                    {
+                        question: "Semasa MENARIK NAFAS, apakah yang berlaku kepada dada manusia?",
+                        options: ["Dada menurun dan mengempis", "Dada naik dan meluas", "Dada tidak berubah", "Dada menjadi panas"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah gas yang diserap dalam kuantiti banyak oleh paru-paru semasa menarik nafas?",
+                        options: ["Karbon dioksida", "Oksigen", "Nitrogen", "Hidrogen"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah yang dimaksudkan dengan 'Kadar Pernafasan'?",
+                        options: ["Bilangan pergerakan dada naik dan turun dalam satu minit", "Kelajuan kita berlari", "Jumlah air yang diminum", "Masa tidur seseorang"],
+                        correct: 0
+                    },
+                    {
+                        question: "Organ manakah yang dipertanggungjawabkan untuk penyingkiran air kencing (urin)?",
+                        options: ["Kulit", "Paru-paru", "Ginjal (Buah pinggang)", "Jantung"],
+                        correct: 2
+                    },
+                    {
+                        question: "Apakah perbezaan antara PERKUMUHAN dan PENYAHINJAAN?",
+                        options: ["Perkumuhan membuang tinja, Penyahinjaan membuang peluh", "Perkumuhan penyingkiran bahan buangan metabolisme, Penyahinjaan penyingkiran sisa makanan tak tercerna (tinja)", "Kedua-duanya sama", "Perkumuhan melibatkan hidung sahaja"],
+                        correct: 1
+                    },
+                    {
+                        question: "Antara aktiviti berikut, yang manakah menghasilkan KADAR PERNAFASAN PALING TINGGI?",
+                        options: ["Membaca buku", "Tidur terlentang", "Berlari pecut 100 meter", "Duduk bersila"],
+                        correct: 2
+                    },
+                    {
+                        question: "Manusia bergerak balas terhadap rangsangan untuk...",
+                        options: ["Mencantikkan diri", "Melindungi diri daripada bahaya atau kecederaan", "Menambah berat badan", "Mempercepatkan pertumbuhan gigi"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah kesan amalan merokok terhadap organ pernafasan manusia?",
+                        options: ["Menjadikan paru-paru lebih sihat", "Menyebabkan penyakit kanser paru-paru dan asma", "Menambah saiz dada", "Mempercepatkan ingatan"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apabila tangan tersentuh cawan yang sangat panas, apakah gerak balas serta-merta manusia?",
+                        options: ["Menarik tangan dengan cepat", "Memegang cawan lebih lama", "Meniup tangan", "Mendiamkan diri"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "Unit 4: Haiwan",
+                subtitle: "Organ Pernafasan & Haiwan Vertebrata",
+                icon: "🐸",
+                badgeColor: "from-emerald-500 to-teal-600",
+                questions: [
+                    {
+                        question: "Haiwan seperti Ikan, Udang dan Ketam bernafas menggunakan...",
+                        options: ["Paru-paru", "Insang", "Kulit lembap", "Spirakel"],
+                        correct: 1
+                    },
+                    {
+                        question: "Belalang, Kupu-kupu dan Lipas bernafas menerusi struktur liang khas dinamakan...",
+                        options: ["Insang", "Spirakel", "Kulit lembap", "Paru-paru"],
+                        correct: 1
+                    },
+                    {
+                        question: "Katak dan Salamander merupakan haiwan amfibia yang mempunyai DUA organ pernafasan iaitu...",
+                        options: ["Insang dan Spirakel", "Paru-paru dan Kulit lembap", "Paru-paru dan Insang", "Kulit lembap dan Spirakel"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah yang dimaksudkan dengan haiwan 'VERTEBRATA'?",
+                        options: ["Haiwan yang tidak mempunyai tulang belakang", "Haiwan yang mempunyai tulang belakang", "Haiwan yang bertelur sahaja", "Haiwan yang hidup di dalam air"],
+                        correct: 1
+                    },
+                    {
+                        question: "Antara kumpulan haiwan berikut, yang manakah merupakan contoh haiwan INVERTEBRATA (tiada tulang belakang)?",
+                        options: ["Cacing tanah, Cacing pita dan Semut", "Kucing, Burung dan Ikan", "Katak, Ular dan Harimau", "Kuda, Lembu dan Paus"],
+                        correct: 0
+                    },
+                    {
+                        question: "Kucing, Paus dan Lumba-lumba dikategorikan sebagai MAMALIA kerana...",
+                        options: ["Mempunyai bulu/rambut dan menyusukan anak", "Mempunyai sisik keras", "Bernafas guna insang", "Bertelur di darat"],
+                        correct: 0
+                    },
+                    {
+                        question: "Manakah antara haiwan berikut tergolong dalam kumpulan REPTILIA?",
+                        options: ["Katak", "Buaya dan Ular", "Helang", "Ikan Jerung"],
+                        correct: 1
+                    },
+                    {
+                        question: "Ciri-ciri khas Burung (Aves) termasuklah...",
+                        options: ["Mempunyai bulu pelepah, patuk dan bertelur", "Mempunyai kulit lembap dan berkaki 6", "Menyusukan anak dalam air", "Mempunyai sisik lendir"],
+                        correct: 0
+                    },
+                    {
+                        question: "Paus dan Lumba-lumba hidup di dalam laut tetapi bernafas menggunakan...",
+                        options: ["Insang", "Paru-paru", "Kulit lembap", "Spirakel"],
+                        correct: 1
+                    },
+                    {
+                        question: "Ikan Pari dan Ikan Emas membiak secara...",
+                        options: ["Lahir anak", "Bertelur", "Membelah diri", "Tunas"],
+                        correct: 1
+                    }
+                ]
+            },
+            {
+                id: 5,
+                title: "Unit 5: Tumbuh-tumbuhan",
+                subtitle: "Gerak Balas Tumbuhan & Fotosintesis",
+                icon: "🌿",
+                badgeColor: "from-green-500 to-emerald-700",
+                questions: [
+                    {
+                        question: "Akar tumbuh-tumbuhan bergerak balas terhadap dua rangsangan utama iaitu...",
+                        options: ["Cahaya matahari dan Udara", "Graviti dan Air", "Sentuhan dan Angin", "Baja dan Bunyi"],
+                        correct: 1
+                    },
+                    {
+                        question: "Pucuk dan daun tumbuh-tumbuhan sentiasa tumbuh bergerak balas ke arah...",
+                        options: ["Daya graviti", "Cahaya matahari", "Pusat bumi", "Kegelapan"],
+                        correct: 1
+                    },
+                    {
+                        question: "Pokok Semalu menguncupkan daunnya apabila disentuh. Ini adalah gerak balas terhadap...",
+                        options: ["Rangsangan sentuhan", "Rangsangan air", "Rangsangan cahaya", "Rangsangan suhu"],
+                        correct: 0
+                    },
+                    {
+                        question: "Apakah proses di mana tumbuh-tumbuhan membuat makanannya sendiri?",
+                        options: ["Respirasi", "Pencernaan", "Fotosintesis", "Penyejatan"],
+                        correct: 2
+                    },
+                    {
+                        question: "Apakah EMPAT keperluan utama untuk proses FOTOSINTESIS berlaku?",
+                        options: ["Cahaya matahari, Klorofil, Karbon dioksida dan Air", "Oksigen, Baja, Minyak dan Cahaya", "Biji benih, Tanah, Oksigen dan Hujan", "Gula, Garam, Klorofil dan Angin"],
+                        correct: 0
+                    },
+                    {
+                        question: "Apakah bahan berbojot hijau pada daun yang menyerap cahaya matahari?",
+                        options: ["Stoma", "Klorofil", "Glukosa", "Karbamat"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah HASIL utama daripada proses Fotosintesis?",
+                        options: ["Karbon dioksida dan Air", "Glukosa (Kanji) dan Oksigen", "Nitrogen dan Garam", "Klorofil dan Tenaga Habs"],
+                        correct: 1
+                    },
+                    {
+                        question: "Mengapakah fotosintesis sangat PENTING kepada hidupan lain seperti manusia dan haiwan?",
+                        options: ["Membekalkan sumber makanan dan gas Oksigen untuk bernafas", "Membuatkan bumi menjadi gelap", "Mengurangkan jumlah air sungai", "Menghasilkan bunyi merdu"],
+                        correct: 0
+                    },
+                    {
+                        question: "Di manakah kanji berlebih disimpan dalam tumbuh-tumbuhan?",
+                        options: ["Daun, batang, akar, buah dan biji benih", "Di dalam udara", "Di dalam pasu", "Di dalam air tanah"],
+                        correct: 0
+                    },
+                    {
+                        question: "Gas apakah yang DISERAP oleh tumbuhan semasa menjalankan fotosintesis?",
+                        options: ["Oksigen", "Karbon dioksida", "Nitrogen", "Helium"],
+                        correct: 1
+                    }
+                ]
+            },
+            {
+                id: 6,
+                title: "Unit 6: Pengukuran",
+                subtitle: "Pengukuran Luas & Isi Padu",
+                icon: "📐",
+                badgeColor: "from-purple-500 to-violet-600",
+                questions: [
+                    {
+                        question: "Luas ialah besarnya sesuatu permukaan. Unit piawai bagi luas ialah...",
+                        options: ["Meter (m)", "Sentimeter persegi (cm²)", "Liter (l)", "Kilogram (kg)"],
+                        correct: 1
+                    },
+                    {
+                        question: "Rumus untuk mengira Luas segi empat tepat ialah...",
+                        options: ["Panjang × Lebar", "Panjang + Lebar + Tinggi", "Panjang ÷ Lebar", "Panjang × Panjang × Panjang"],
+                        correct: 0
+                    },
+                    {
+                        question: "Isi padu pepejal (seperti kubus) diukur dalam unit...",
+                        options: ["Sentimeter padu (cm³)", "Sentimeter persegi (cm²)", "Kilometer (km)", "Gram (g)"],
+                        correct: 0
+                    },
+                    {
+                        question: "Rumus mengira Isi Padu sebuah kuboid ialah...",
+                        options: ["Panjang × Lebar × Tinggi", "Panjang + Lebar", "Panjang × Lebar ÷ 2", "Tinggi ÷ Lebar"],
+                        correct: 0
+                    },
+                    {
+                        question: "Apakah kaedah yang digunakan untuk mengukur isi padu pepejal tidak sekata (seperti batu)?",
+                        options: ["Kaedah sesaran air", "Kaedah pembaris", "Kaedah timbangan", "Kaedah pemanasan"],
+                        correct: 0
+                    },
+                    {
+                        question: "Alat pengukur cecair yang mempunyai skala tepat ialah...",
+                        options: ["Bikar biasa", "Silinder penyukat", "Cawan plastik", "Sudu makan"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah nama permukaan cecair yang melengkung di dalam silinder penyukat?",
+                        options: ["Meniskus", "Kedudukan rata", "Akar", "Spirakel"],
+                        correct: 0
+                    },
+                    {
+                        question: "Sebuah kad berbentuk segi empat mempunyai panjang 5 cm dan lebar 4 cm. Berapakah luas kad tersebut?",
+                        options: ["9 cm²", "20 cm²", "18 cm²", "10 cm²"],
+                        correct: 1
+                    },
+                    {
+                        question: "Sebuah kotak mempunyai panjang 2 cm, lebar 3 cm dan tinggi 4 cm. Berapakah isi padu kotak tersebut?",
+                        options: ["9 cm³", "24 cm³", "12 cm³", "14 cm³"],
+                        correct: 1
+                    },
+                    {
+                        question: "Sekiranya aras air awal dalam silinder penyukat ialah 30 ml dan bertambah menjadi 42 ml selepas batu dimasukkan, berapakah isi padu batu itu?",
+                        options: ["12 cm³", "72 cm³", "30 cm³", "42 cm³"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                id: 7,
+                title: "Unit 7: Sifat Bahan",
+                subtitle: "Sumber Asas & Sifat Bahan",
+                icon: "🧱",
+                badgeColor: "from-fuchsia-500 to-pink-600",
+                questions: [
+                    {
+                        question: "Antara berikut, bahan manakah yang berasal daripada sumber asas TUMBUH-TUMBUHAN?",
+                        options: ["Kayu, Getah dan Kapas", "Kulit dan Bulu", "Logam dan Tanih", "Plastik dan Petroleum"],
+                        correct: 0
+                    },
+                    {
+                        question: "Plastik dan kain sintetik diperolehi daripada sumber asas...",
+                        options: ["Tumbuhan", "Haiwan", "Petroleum", "Batuan"],
+                        correct: 2
+                    },
+                    {
+                        question: "Bahan yang membenarkan ARUS ELEKTRIK melaluinya dikenali sebagai...",
+                        options: ["Penebat elektrik", "Konduktor elektrik", "Bahan kalis air", "Bahan lut sinar"],
+                        correct: 1
+                    },
+                    {
+                        question: "Antara bahan berikut, yang manakah merupakan KONDUKTOR HABA yang baik?",
+                        options: ["Sudu besi / logam", "Sudu kayu", "Pemutar pemegang plastik", "Kain tuala"],
+                        correct: 0
+                    },
+                    {
+                        question: "Bahan yang membenarkan KESEMUA cahaya melaluinya dan objek kelihatan sangat jelas dinamakan...",
+                        options: ["Bahan Lut Sinar", "Bahan Lut Cahaya", "Bahan Kedap Cahaya", "Bahan Penebat"],
+                        correct: 0
+                    },
+                    {
+                        question: "Kertas surat khabar dan kaca teras membenarkan SEBAHAGIAN cahaya melaluinya. Bahan ini ialah...",
+                        options: ["Lut sinar", "Lut cahaya", "Opaque (Kedap)", "Kalis air"],
+                        correct: 1
+                    },
+                    {
+                        question: "Mengapakah pemegang kuali diperbuat daripada plastik atau kayu?",
+                        options: ["Kerana ia penebat haba (tidak panas apabila dipegang)", "Kerana ia murah", "Kerana ia berat", "Kerana ia mudah lebur"],
+                        correct: 0
+                    },
+                    {
+                        question: "Kain tuala menyerap air tetapi baju hujan tidak menyerap air. Baju hujan bersifat...",
+                        options: ["Serap air", "Kalis air", "Konduktor", "Lut sinar"],
+                        correct: 1
+                    },
+                    {
+                        question: "Objek manakah yang bersifat kenyal (boleh kembali ke bentuk asal selepas ditarik)?",
+                        options: ["Gelang getah", "Paku besi", "Kertas", "Batu kapur"],
+                        correct: 0
+                    },
+                    {
+                        question: "Kulit dan bulu pelepah merupakan bahan yang berasal daripada sumber asas...",
+                        options: ["Tumbuhan", "Haiwan", "Batuan", "Petroleum"],
+                        correct: 1
+                    }
+                ]
+            },
+            {
+                id: 8,
+                title: "Unit 8: Bayang-bayang & Kejelasan",
+                subtitle: "Sifat Cahaya & Pembentukan Bayang-bayang",
+                icon: "💡",
+                badgeColor: "from-cyan-500 to-blue-600",
+                questions: [
+                    {
+                        question: "Cahaya bergerak dalam lintasan...",
+                        options: ["Lurus", "Bengkak-bengkok", "Bulatan", "Zig-zag"],
+                        correct: 0
+                    },
+                    {
+                        question: "Bayang-bayang terhasil apabila cahaya...",
+                        options: ["Dibiaskan oleh air", "Dihalang oleh objek kedap atau lut cahaya", "Dipantulkan oleh cermin", "Dipanaskan"],
+                        correct: 1
+                    },
+                    {
+                        question: "Kejelasan bayang-bayang paling JELAS dan GELAP terhasil apabila cahaya dihalang oleh...",
+                        options: ["Objek Lut Sinar", "Objek Kedap Cahaya", "Objek Lut Cahaya", "Udara"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah yang berlaku kepada SAIZ BAYANG-BAYANG apabila jarak antara sumber cahaya dan objek SEMAKIN DEKAT?",
+                        options: ["Saiz bayang-bayang semakin besar", "Saiz bayang-bayang semakin kecil", "Saiz bayang-bayang kekal sama", "Bayang-bayang hilang"],
+                        correct: 0
+                    },
+                    {
+                        question: "Bentuk bayang-bayang bergantung kepada...",
+                        options: ["Bentuk objek dan kedudukan sumber cahaya", "Warna objek", "Berat objek", "Suhu bilik"],
+                        correct: 0
+                    },
+                    {
+                        question: "Antara objek berikut, yang manakah TIDAK MENGHASILKAN bayang-bayang?",
+                        options: ["Plastik lut sinar yang jernih", "Buku teks", "Kadbod tebal", "Cawan seramik"],
+                        correct: 0
+                    },
+                    {
+                        question: "Aplikasi sifat cahaya bergerak lurus dalam kehidupan harian ialah...",
+                        options: ["Lampu suluh membentuk alur cahaya lurus", "Periskop", "Pembentukan pelangi", "Bayangan cermin muka"],
+                        correct: 0
+                    },
+                    {
+                        question: "Apabila objek dijauhkan daripada skrin, saiz bayang-bayang pada skrin akan menjadi...",
+                        options: ["Semakin kecil", "Semakin besar", "Tiada perubahan", "Berwarna-warni"],
+                        correct: 0
+                    },
+                    {
+                        question: "Kejelasan bayang-bayang bagi plastik berwarna (lut cahaya) ialah...",
+                        options: ["Sangat jelas", "Kurang jelas / samar-samar", "Tiada bayang-bayang", "Hitam pekat"],
+                        correct: 1
+                    },
+                    {
+                        question: "Kedudukan matahari pada waktu pagi berada di sebelah timur, maka bayang-bayang objek berada di sebelah...",
+                        options: ["Barat", "Timur", "Utara", "Atas"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                id: 9,
+                title: "Unit 9: Bumi",
+                subtitle: "Daya Graviti, Putaran & Peredaran Bumi",
+                icon: "🌍",
+                badgeColor: "from-indigo-500 to-purple-700",
+                questions: [
+                    {
+                        question: "Daya yang menarik semua objek di Bumi ke arah pusat Bumi dinamakan...",
+                        options: ["Daya Geseran", "Daya Graviti Bumi", "Daya Magnet", "Daya Elektrik"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah kesan utama kewujudan Daya Graviti Bumi?",
+                        options: ["Semua objek melayang di udara", "Objek kekal berada di kedudukannya dan jatuh ke bawah apabila dilepaskan", "Bumi berhenti berputar", "Air laut menjadi mendatar"],
+                        correct: 1
+                    },
+                    {
+                        question: "Bumi berputar pada paksinya dari arah...",
+                        options: ["Barat ke Timur", "Timur ke Barat", "Utara ke Selatan", "Atas ke Bawah"],
+                        correct: 0
+                    },
+                    {
+                        question: "Berapakah tempoh masa yang diambil oleh Bumi untuk membuat satu PUTARAN LENGKAP pada paksinya?",
+                        options: ["12 jam", "24 jam (1 hari)", "365 hari", "30 hari"],
+                        correct: 1
+                    },
+                    {
+                        question: "Putaran Bumi pada paksinya menyebabkan berlaku kejadian...",
+                        options: ["Empat musim", "Siang dan Malam", "Gerhana Bulan sahaja", "Hujan lebat"],
+                        correct: 1
+                    },
+                    {
+                        question: "Bumi beredar mengelilingi Matahari mengikut laluan khas dinamakan...",
+                        options: ["Paksi", "Orbit", "Pusat graviti", "Khatulistiwa"],
+                        correct: 1
+                    },
+                    {
+                        question: "Berapakah masa yang diambil oleh Bumi untuk membuat satu PEREDARAN LENGKAP mengelilingi Matahari?",
+                        options: ["24 jam", "1 tahun (365 ¼ hari)", "1 bulan", "100 hari"],
+                        correct: 1
+                    },
+                    {
+                        question: "Bahagian Bumi yang MENGHADAP Matahari akan mengalami waktu...",
+                        options: ["Malam", "Siang", "Senja", "Gerhana"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah yang akan berlaku jika Bumi TIDAK mempunyai daya graviti?",
+                        options: ["Semua hidupan dan objek akan terapung di udara", "Bumi akan meletup", "Hujan akan turun lebih lebat", "Siang menjadi lebih panjang"],
+                        correct: 0
+                    },
+                    {
+                        question: "Kedudukan dan panjang bayang-bayang berubah-ubah dari pagi hingga petang disebabkan oleh...",
+                        options: ["Putaran Bumi pada paksinya", "Peredaran Bulan mengelilingi Bumi", "Perubahan suhu matahari", "Pergerakan awan"],
+                        correct: 0
+                    }
+                ]
+            },
+            {
+                id: 10,
+                title: "Unit 10: Mesin Ringkas",
+                subtitle: "7 Jenis Mesin Ringkas & Mesin Kompleks",
+                icon: "⚙️",
+                badgeColor: "from-slate-600 to-slate-800",
+                questions: [
+                    {
+                        question: "Mesin ringkas ialah alat yang membantu kita melakukan kerja dengan lebih...",
+                        options: ["Sukar dan lambat", "Mudah dan cepat", "Mahal", "Berat"],
+                        correct: 1
+                    },
+                    {
+                        question: "Apakah TIGA komponen utama yang ada pada sistem TUAS?",
+                        options: ["Beban, Fulkrum dan Daya", "Roda, Tali dan Paksi", "Baji, Skru dan Satah", "Gigi, Rantai dan Minyak"],
+                        correct: 0
+                    },
+                    {
+                        question: "Papan condong yang menghubungkan dua aras berbeza untuk memudahkan memindahkan beban ialah...",
+                        options: ["Satah Condong", "Baji", "Takal", "Gear"],
+                        correct: 0
+                    },
+                    {
+                        question: "Pisau, kapak dan pahat merupakan contoh mesin ringkas jenis...",
+                        options: ["Baji", "Skru", "Roda dan gandar", "Tuas"],
+                        correct: 0
+                    },
+                    {
+                        question: "Alat yang mempunyai alur dan digunakan bersama tali untuk mengangkat beban berat ke atas ialah...",
+                        options: ["Takal", "Gear", "Satah condong", "Skru"],
+                        correct: 0
+                    },
+                    {
+                        question: "Roda bergigi yang berfungsi untuk mengubah kelajuan atau arah pergerakan dinamakan...",
+                        options: ["Gear", "Gandar", "Fulkrum", "Tuas"],
+                        correct: 0
+                    },
+                    {
+                        question: "Kereta sorong, pembuka botol dan gunting merupakan contoh penggunaan...",
+                        options: ["Tuas", "Baji", "Takal", "Satah condong"],
+                        correct: 0
+                    },
+                    {
+                        question: "Mesin KOMPLEKS bermaksud...",
+                        options: ["Mesin yang menggabungkan LEBIH DARIPADA SATU mesin ringkas", "Mesin yang tidak menggunakan elektrik", "Mesin yang sangat besar sahaja", "Mesin buatan kayu"],
+                        correct: 0
+                    },
+                    {
+                        question: "Basikal merupakan contoh Mesin Kompleks yang menggabungkan mesin ringkas seperti...",
+                        options: ["Roda dan gandar, Gear dan Tuas (brek)", "Takal dan Baji sahaja", "Satah condong sahaja", "Skru sahaja"],
+                        correct: 0
+                    },
+                    {
+                        question: "Mengapakah mereka bentuk mesin yang lestari sangat penting dalam kehidupan?",
+                        options: ["Menjimatkan masa, tenaga dan mesra alam", "Menjadikan barangan mahal", "Supaya manusia tidak perlu bekerja", "Untuk mencantikkan rumah"],
+                        correct: 0
+                    }
+                ]
+            }
+        ];
+
+        /* ====================================================================
+           2. STATE MANAGEMENT & AUDIO SYNTHESIZER
+           ==================================================================== */
+        let activeUnit = null;
+        let currentQIndex = 0;
+        let userScore = 0;
+        let remainingLives = 3;
+        let correctAnswersCount = 0;
+        let isAnsweringAllowed = true;
+
+        /* Web Audio API Synthesizer */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function playSound(type) {
+            try {
+                if (!audioCtx) audioCtx = new AudioContext();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    osc.frequency.setValueAtTime(783.99, now + 0.16);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now); osc.stop(now + 0.35);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.setValueAtTime(120, now + 0.12);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                    osc.start(now); osc.stop(now + 0.3);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(450, now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now); osc.stop(now + 0.05);
+                }
+            } catch (e) {
+                console.log("Audio muted / not supported.");
+            }
+        }
+
+        /* ====================================================================
+           3. UI RENDER FUNCTIONS
+           ==================================================================== */
+        window.onload = function() {
+            renderUnitsGrid();
+            populateUnitFilterDropdown();
+        };
+
+        function showSection(sectionId) {
+            playSound('click');
+            document.getElementById('units-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('record-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.add('hidden');
+
+            document.getElementById(sectionId).classList.remove('hidden');
+            if (sectionId === 'game-screen') {
+                document.getElementById(sectionId).classList.add('flex');
+            }
+        }
+
+        function renderUnitsGrid() {
+            const grid = document.getElementById('units-grid');
+            grid.innerHTML = '';
+
+            unitsData.forEach(unit => {
+                const card = document.createElement('div');
+                card.className = `glass-card rounded-2xl p-5 hover:border-amber-400/50 transition-all duration-300 flex flex-col justify-between shadow-xl relative overflow-hidden group`;
+                
+                card.innerHTML = `
+                    <div class="absolute -right-6 -bottom-6 text-7xl opacity-10 group-hover:opacity-20 transition-opacity">
+                        ${unit.icon}
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="w-10 h-10 rounded-xl bg-gradient-to-br ${unit.badgeColor} flex items-center justify-center text-xl shadow-md">
+                                ${unit.icon}
+                            </span>
+                            <span class="text-xs font-bold text-amber-300 uppercase tracking-wide">
+                                10 Soalan
+                            </span>
+                        </div>
+                        <h3 class="text-lg font-bold font-heading text-white mb-1 group-hover:text-amber-300 transition-colors">
+                            ${unit.title}
+                        </h3>
+                        <p class="text-xs text-gray-300 mb-4 line-clamp-2">
+                            ${unit.subtitle}
+                        </p>
+                    </div>
+                    <button onclick="startUnitQuiz(${unit.id})" class="btn-interactive w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold font-heading text-sm py-2.5 rounded-xl border-b-2 border-cyan-800 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-play"></i> Mula Kuiz Unit
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* ====================================================================
+           4. GAMEPLAY ENGINE
+           ==================================================================== */
+        function startUnitQuiz(unitId) {
+            activeUnit = unitsData.find(u => u.id === unitId);
+            currentQIndex = 0;
+            userScore = 0;
+            remainingLives = 3;
+            correctAnswersCount = 0;
+
+            document.getElementById('current-unit-icon').textContent = activeUnit.icon;
+            document.getElementById('current-unit-title').textContent = activeUnit.title;
+            document.getElementById('current-unit-subtitle').textContent = activeUnit.subtitle;
+
+            showSection('game-screen');
+            updateLivesUI();
+            updateScoreUI();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isAnsweringAllowed = true;
+            document.getElementById('feedback-box').classList.add('hidden');
+
+            const q = activeUnit.questions[currentQIndex];
+            document.getElementById('question-number-badge').textContent = `Soalan ${currentQIndex + 1} daripada ${activeUnit.questions.length}`;
+            document.getElementById('question-text').textContent = q.question;
+            document.getElementById('question-tracker').textContent = `${currentQIndex + 1} / ${activeUnit.questions.length}`;
+
+            // Progress Bar
+            const pct = (currentQIndex / activeUnit.questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${pct}%`;
+
+            // Render Options
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            const prefixes = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-interactive w-full text-left p-4 rounded-2xl font-bold text-white bg-slate-800/90 hover:bg-slate-700 border border-slate-600 flex items-center gap-3 transition-all text-xs md:text-sm`;
+                btn.onclick = () => handleAnswer(idx, btn);
+
+                btn.innerHTML = `
+                    <span class="w-7 h-7 rounded-lg bg-indigo-600/40 text-indigo-200 flex items-center justify-center font-heading text-xs border border-indigo-400/30 shrink-0">
+                        ${prefixes[idx]}
+                    </span>
+                    <span class="flex-grow">${opt}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedIndex, btnElement) {
+            if (!isAnsweringAllowed) return;
+            isAnsweringAllowed = false;
+
+            const q = activeUnit.questions[currentQIndex];
+            const allBtns = document.getElementById('options-container').querySelectorAll('button');
+
+            if (selectedIndex === q.correct) {
+                playSound('correct');
+                userScore += 100;
+                correctAnswersCount++;
+                updateScoreUI();
+
+                btnElement.classList.remove('bg-slate-800/90', 'border-slate-600');
+                btnElement.classList.add('bg-emerald-600', 'border-emerald-400', 'ring-2', 'ring-emerald-300');
+                showFeedback(true, "✨ Syabas! Jawapan anda TEPAT! (+100 Kristal)");
+            } else {
+                playSound('wrong');
+                remainingLives--;
+                updateLivesUI();
+
+                btnElement.classList.remove('bg-slate-800/90', 'border-slate-600');
+                btnElement.classList.add('bg-rose-600', 'border-rose-400');
+
+                // Highlight correct answer
+                allBtns[q.correct].classList.remove('bg-slate-800/90', 'border-slate-600');
+                allBtns[q.correct].classList.add('bg-emerald-600', 'border-emerald-400');
+
+                showFeedback(false, `❌ Kurang Tepat. Jawapan betul ialah: "${q.options[q.correct]}"`);
+            }
+
+            allBtns.forEach(b => b.style.pointerEvents = 'none');
+
+            setTimeout(() => {
+                if (remainingLives <= 0 || currentQIndex + 1 >= activeUnit.questions.length) {
+                    finishQuiz();
+                } else {
+                    currentQIndex++;
+                    loadQuestion();
+                }
+            }, 2000);
+        }
+
+        function showFeedback(isCorrect, msg) {
+            const fb = document.getElementById('feedback-box');
+            const txt = document.getElementById('feedback-text');
+            txt.textContent = msg;
+            fb.classList.remove('hidden', 'bg-emerald-900/80', 'border-emerald-500', 'text-emerald-200', 'bg-rose-900/80', 'border-rose-500', 'text-rose-200');
+
+            if (isCorrect) {
+                fb.classList.add('bg-emerald-900/80', 'border-emerald-500', 'text-emerald-200');
+            } else {
+                fb.classList.add('bg-rose-900/80', 'border-rose-500', 'text-rose-200');
+            }
+        }
+
+        function updateLivesUI() {
+            const container = document.getElementById('lives-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const heart = document.createElement('i');
+                if (i < remainingLives) {
+                    heart.className = 'fa-solid fa-heart text-pink-500';
+                } else {
+                    heart.className = 'fa-solid fa-heart text-gray-600';
+                }
+                container.appendChild(heart);
+            }
+        }
+
+        function updateScoreUI() {
+            document.getElementById('score-text').textContent = `${userScore} 💎`;
+        }
+
+        function finishQuiz() {
+            document.getElementById('final-score').textContent = `${userScore} 💎`;
+            document.getElementById('final-accuracy').textContent = `${correctAnswersCount} / 10`;
+            
+            if (correctAnswersCount >= 6) {
+                document.getElementById('record-icon').textContent = "👑";
+                document.getElementById('record-title').textContent = "TAHNIAH! PENGEMBARA HEBAT";
+            } else {
+                document.getElementById('record-icon').textContent = "💪";
+                document.getElementById('record-title').textContent = "CUBA LAGI DI MASA AKAN DATANG!";
+            }
+
+            showSection('record-screen');
+        }
+
+        /* ====================================================================
+           5. DASHBOARD & STORAGE LOGIC (LOCALSTORAGE)
+           ==================================================================== */
+        function saveStudentResult(e) {
+            e.preventDefault();
+            const name = document.getElementById('student-name').value.trim();
+            const cls = document.getElementById('student-class').value.trim();
+
+            if (!name || !cls) return;
+
+            const record = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleString('ms-MY', { dateStyle: 'short', timeStyle: 'short' }),
+                studentName: name,
+                studentClass: cls,
+                unitId: activeUnit.id,
+                unitTitle: activeUnit.title,
+                score: userScore,
+                accuracy: `${correctAnswersCount}/10`
+            };
+
+            const existingRecords = JSON.parse(localStorage.getItem('sains_tahun4_records') || '[]');
+            existingRecords.push(record);
+            localStorage.setItem('sains_tahun4_records', JSON.stringify(existingRecords));
+
+            // Reset Form & Redirect to Teacher Dashboard
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-class').value = '';
+            
+            alert('✅ Rekod pencapaian anda telah berjaya disimpan!');
+            showSection('dashboard-screen');
+            renderTeacherDashboard();
+        }
+
+        function populateUnitFilterDropdown() {
+            const select = document.getElementById('filter-unit');
+            unitsData.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.id;
+                opt.textContent = u.title;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderTeacherDashboard() {
+            const records = JSON.parse(localStorage.getItem('sains_tahun4_records') || '[]');
+            const tbody = document.getElementById('dashboard-table-body');
+            const emptyMsg = document.getElementById('empty-dashboard-msg');
+
+            // Analytics calculation
+            document.getElementById('summary-total-students').textContent = records.length;
+
+            if (records.length === 0) {
+                tbody.innerHTML = '';
+                emptyMsg.classList.remove('hidden');
+                document.getElementById('summary-avg-score').textContent = '0 💎';
+                document.getElementById('summary-top-unit').textContent = '-';
+                return;
+            }
+
+            emptyMsg.classList.add('hidden');
+
+            const totalScore = records.reduce((sum, r) => sum + r.score, 0);
+            const avg = Math.round(totalScore / records.length);
+            document.getElementById('summary-avg-score').textContent = `${avg} 💎`;
+
+            // Unit frequency
+            const unitCounts = {};
+            records.forEach(r => { unitCounts[r.unitTitle] = (unitCounts[r.unitTitle] || 0) + 1; });
+            const topUnit = Object.keys(unitCounts).reduce((a, b) => unitCounts[a] > unitCounts[b] ? a : b, '-');
+            document.getElementById('summary-top-unit').textContent = topUnit.replace('Unit ', 'U');
+
+            filterDashboardTable();
+        }
+
+        function filterDashboardTable() {
+            const records = JSON.parse(localStorage.getItem('sains_tahun4_records') || '[]');
+            const searchVal = document.getElementById('search-student').value.toLowerCase();
+            const filterUnitVal = document.getElementById('filter-unit').value;
+            const tbody = document.getElementById('dashboard-table-body');
+
+            tbody.innerHTML = '';
+
+            const filtered = records.filter(r => {
+                const matchesSearch = r.studentName.toLowerCase().includes(searchVal) || r.studentClass.toLowerCase().includes(searchVal);
+                const matchesUnit = filterUnitVal === 'ALL' || r.unitId.toString() === filterUnitVal;
+                return matchesSearch && matchesUnit;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-gray-400">Tiada rekod ditemui mengikut carian ini.</td></tr>`;
+                return;
+            }
+
+            // Sort newest first
+            filtered.sort((a, b) => b.id - a.id);
+
+            filtered.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/50 transition-colors';
+                tr.innerHTML = `
+                    <td class="p-3.5 text-gray-400 text-xs">${r.timestamp}</td>
+                    <td class="p-3.5 font-bold text-white">${r.studentName}</td>
+                    <td class="p-3.5 text-cyan-300 font-semibold">${r.studentClass}</td>
+                    <td class="p-3.5 text-amber-200 text-xs">${r.unitTitle}</td>
+                    <td class="p-3.5 text-center font-bold text-emerald-400">${r.accuracy}</td>
+                    <td class="p-3.5 text-center font-extrabold text-amber-400">${r.score} 💎</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function exportToCSV() {
+            const records = JSON.parse(localStorage.getItem('sains_tahun4_records') || '[]');
+            if (records.length === 0) {
+                alert('Tiada data untuk dimuat turun!');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Tarikh,Nama Murid,Kelas,Unit Tajuk,Ketepatan,Skor Kristal\n";
+
+            records.forEach(r => {
+                csvContent += `"${r.timestamp}","${r.studentName}","${r.studentClass}","${r.unitTitle}","${r.accuracy}","${r.score}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekod_Kuiz_Sains_Tahun4_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function clearAllData() {
+            if (confirm('Adakah anda pasti mahu memadam SEMUA rekod murid dalam dashboard ini? Tindakan ini tidak boleh dibatalkan.')) {
+                localStorage.removeItem('sains_tahun4_records');
+                renderTeacherDashboard();
+                alert('Semua rekod telah dipadam.');
+            }
+        }
+    </script>
+</body>
+</html>
